@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — Бронирование 2027{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto bg-white rounded-xl shadow p-8 mt-10">
+    <h1 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Регистрация</h1>
+
+    {% if errors %}
+        <ul class="bg-red-50 border border-red-300 text-red-700 rounded-lg px-4 py-3 mb-5 list-disc list-inside text-sm space-y-1">
+            {% for e in errors %}
+                <li>{{ e }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('register') }}" class="space-y-4">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="login">Логин</label>
+            <input id="login" name="login" type="text" required
+                   value="{{ form.login if form else '' }}"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   placeholder="Только латиница/цифры, минимум 6 символов" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Пароль</label>
+            <input id="password" name="password" type="password" required
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   placeholder="Минимум 6 символов" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="full_name">ФИО</label>
+            <input id="full_name" name="full_name" type="text" required
+                   value="{{ form.full_name if form else '' }}"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   placeholder="Иванов Иван Иванович" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="phone">Телефон</label>
+            <input id="phone" name="phone" type="tel" required
+                   value="{{ form.phone if form else '' }}"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   placeholder="8(XXX)XXX-XX-XX" />
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email</label>
+            <input id="email" name="email" type="email" required
+                   value="{{ form.email if form else '' }}"
+                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                   placeholder="example@mail.ru" />
+        </div>
+
+        <button type="submit"
+                class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
+            Зарегистрироваться
+        </button>
+    </form>
+
+    <p class="mt-4 text-center text-sm text-gray-500">
+        Уже есть аккаунт?
+        <a href="{{ url_for('login') }}" class="text-indigo-600 hover:underline font-medium">Войти</a>
+    </p>
+</div>
+
+{% block scripts %}
+<script>
+/* Phone mask: auto-format as user types */
+const phoneInput = document.getElementById('phone');
+if (phoneInput) {
+    phoneInput.addEventListener('input', function () {
+        let digits = this.value.replace(/\D/g, '');
+        if (!digits) { this.value = ''; return; }
+        if (digits[0] !== '8') digits = '8' + digits;
+        digits = digits.substring(0, 11);
+        let result = '';
+        if (digits.length >= 1) result = digits[0];
+        if (digits.length >= 2) result += '(' + digits.substring(1, 4);
+        if (digits.length >= 5) result += ')' + digits.substring(4, 7);
+        if (digits.length >= 8) result += '-' + digits.substring(7, 9);
+        if (digits.length >= 10) result += '-' + digits.substring(9, 11);
+        this.value = result;
+    });
+}
+</script>
+{% endblock %}
+{% endblock %}
