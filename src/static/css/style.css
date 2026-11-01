@@ -1,0 +1,803 @@
+/* ==========================================================================
+   ПИРИП 2026/2027 — Лабораторная работа №3 (lab-03-task-02)
+   Дизайн и адаптивность: UI-kit, дизайн-токены КИМ, PT Sans, мобильный экран 390x844
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+/* --------------------------------------------------------------------------
+   1. Дизайн-токены (CSS-переменные)
+   -------------------------------------------------------------------------- */
+:root {
+  /* Палитра КИМ */
+  --color-primary: #007bff;        /* Голубой */
+  --color-primary-dark: #0d47a1;   /* Тёмно-синий */
+  --color-secondary: #6c757d;      /* Серый */
+  --color-background: #f8f9fa;     /* Фон приложения */
+  --color-surface: #ffffff;        /* Выделяющий / карточки */
+  --color-surface-hover: #f1f3f5;
+
+  /* Семантические цвета интерфейса */
+  --color-text: #212529;
+  --color-text-muted: #6c757d;
+  --color-border: #dee2e6;
+  --color-border-focus: #80bdff;
+  
+  --color-success: #28a745;
+  --color-success-bg: #d4edda;
+  --color-success-border: #c3e6cb;
+  --color-success-text: #155724;
+
+  --color-danger: #dc3545;
+  --color-danger-bg: #f8d7da;
+  --color-danger-border: #f5c6cb;
+  --color-danger-text: #721c24;
+
+  --color-warning: #ffc107;
+  --color-warning-bg: #fff3cd;
+  --color-warning-border: #ffeeba;
+  --color-warning-text: #856404;
+
+  --color-info: #17a2b8;
+  --color-info-bg: #d1ecf1;
+  --color-info-border: #bee5eb;
+  --color-info-text: #0c5460;
+
+  /* Типографика КИМ (PT Sans) */
+  --font-family: 'PT Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-h1: 36px;
+  --font-h2: 24px;
+  --font-h3: 18px;
+  --font-body: 16px;
+  --font-caption: 12px;
+
+  /* Интервалы (Spacings) */
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Скругления (Border-radius) */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Тени (Box-shadows) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 14px rgba(13, 71, 161, 0.08);
+  --shadow-lg: 0 10px 25px rgba(13, 71, 161, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  --shadow-error: 0 0 0 3px rgba(220, 53, 69, 0.25);
+
+  /* Анимации и переходы */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.25s ease-in-out;
+}
+
+/* --------------------------------------------------------------------------
+   Тёмная тема (Dark Theme)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
+  --color-background: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-hover: #334155;
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-border: #334155;
+  --color-border-focus: #38bdf8;
+
+  --color-primary: #38bdf8;
+  --color-primary-dark: #0284c7;
+  --color-secondary: #94a3b8;
+
+  --color-success-bg: rgba(40, 167, 69, 0.18);
+  --color-success-border: rgba(40, 167, 69, 0.4);
+  --color-success-text: #4ade80;
+
+  --color-danger-bg: rgba(220, 53, 69, 0.2);
+  --color-danger-border: rgba(220, 53, 69, 0.45);
+  --color-danger-text: #f87171;
+
+  --color-warning-bg: rgba(255, 193, 7, 0.18);
+  --color-warning-border: rgba(255, 193, 7, 0.4);
+  --color-warning-text: #fde047;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+/* Доступность: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   2. Базовые стили и сброс (Reset)
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* Защита от горизонтального скролла на 390px */
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+img, svg {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   3. Типографика КИМ
+   -------------------------------------------------------------------------- */
+h1, .h1 {
+  font-size: var(--font-h1);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-primary-dark);
+  margin-bottom: var(--space-md);
+}
+
+[data-theme="dark"] h1, [data-theme="dark"] .h1 {
+  color: var(--color-text);
+}
+
+h2, .h2 {
+  font-size: var(--font-h2);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+}
+
+h3, .h3 {
+  font-size: var(--font-h3);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+}
+
+p, .text-body {
+  font-size: var(--font-body);
+  font-weight: 400;
+  line-height: 1.5;
+  margin-bottom: var(--space-xs);
+}
+
+.text-caption, small, .caption {
+  font-size: var(--font-caption);
+  font-style: italic;
+  line-height: 1.4;
+  color: var(--color-text-muted);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   4. Контейнеры и сетка (Grid / Flexbox)
+   -------------------------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: 1140px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+}
+
+.main-content {
+  flex: 1 0 auto;
+  padding-top: var(--space-lg);
+  padding-bottom: var(--space-2xl);
+  width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   5. Навигация (Navbar)
+   -------------------------------------------------------------------------- */
+.navbar {
+  background-color: var(--color-primary-dark);
+  color: #ffffff;
+  box-shadow: var(--shadow-md);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
+  gap: var(--space-sm);
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: #ffffff;
+  font-size: var(--font-h3);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navbar-brand:hover {
+  text-decoration: none;
+  color: #e0f2fe;
+}
+
+.brand-icon {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+.navbar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  list-style: none;
+}
+
+.nav-link {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-fast);
+  text-decoration: none;
+}
+
+.nav-link:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.12);
+  text-decoration: none;
+}
+
+.theme-toggle-btn {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: var(--transition-fast);
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* --------------------------------------------------------------------------
+   6. Кнопки (UI-Kit: Buttons & States)
+   -------------------------------------------------------------------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  font-weight: 700;
+  line-height: 1.4;
+  padding: 10px 20px;
+  min-height: 44px; /* Удобный touch-target для смартфона 390px */
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  min-height: 34px;
+  font-size: 13px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+
+/* Варианты кнопок */
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+  color: #ffffff;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-success {
+  background-color: var(--color-success);
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-surface-hover);
+  text-decoration: none;
+}
+
+.btn:disabled, .btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   7. Формы и поля ввода (Формы с ошибками рядом с полями)
+   -------------------------------------------------------------------------- */
+.form-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-xl);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.form-group {
+  margin-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-label .required {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.form-control,
+.form-select {
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  min-height: 44px;
+  width: 100%;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.form-control:hover,
+.form-select:hover {
+  border-color: #adb5bd;
+}
+
+.form-control:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-focus);
+}
+
+/* Состояние ошибки (Error State) */
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: var(--color-danger) !important;
+  box-shadow: var(--shadow-error) !important;
+}
+
+.field-error-msg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-caption);
+  color: var(--color-danger);
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+.field-error-msg svg {
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+.field-hint {
+  font-size: var(--font-caption);
+  font-style: italic;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   8. Карточки заявок (Responsive Cards для мобильных 390x844)
+   -------------------------------------------------------------------------- */
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+@media (min-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.reservation-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  position: relative;
+}
+
+.reservation-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.card-id {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--color-primary-dark);
+}
+
+[data-theme="dark"] .card-id {
+  color: var(--color-primary);
+}
+
+.card-title {
+  font-size: var(--font-h3);
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-xs);
+  line-height: 1.3;
+}
+
+.card-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: var(--space-md);
+  font-size: 14px;
+}
+
+.card-meta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--color-text);
+}
+
+.meta-icon {
+  width: 16px;
+  height: 16px;
+  fill: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.meta-label {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  display: block;
+}
+
+.card-footer {
+  border-top: 1px solid var(--color-border);
+  padding-top: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+/* --------------------------------------------------------------------------
+   9. Бейджи статусов (Badges)
+   -------------------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.badge-new {
+  background-color: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning-text);
+}
+
+.badge-assigned {
+  background-color: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  color: var(--color-info-text);
+}
+
+.badge-completed {
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+.badge-admin {
+  background-color: #fee2e2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}
+
+/* --------------------------------------------------------------------------
+   10. Всплывающие сообщения (Flash Alerts)
+   -------------------------------------------------------------------------- */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  margin-bottom: var(--space-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-success {
+  background-color: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  color: var(--color-success-text);
+}
+
+.alert-danger, .alert-error {
+  background-color: var(--color-danger-bg);
+  border: 1px solid var(--color-danger-border);
+  color: var(--color-danger-text);
+}
+
+.alert-info {
+  background-color: var(--color-info-bg);
+  border: 1px solid var(--color-info-border);
+  color: var(--color-info-text);
+}
+
+/* --------------------------------------------------------------------------
+   11. Модальные окна (Modal Dialogs)
+   -------------------------------------------------------------------------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-md);
+}
+
+.modal-content {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  padding: var(--space-lg);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.modal-close:hover {
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+   12. Адаптивные правила для целевого экрана 390x844 px
+   -------------------------------------------------------------------------- */
+@media (max-width: 480px) {
+  :root {
+    --font-h1: 28px; /* Умеренное масштабирование заголовка под смартфон */
+    --font-h2: 22px;
+    --font-h3: 17px;
+    --space-xl: 20px;
+    --space-lg: 16px;
+  }
+
+  .container {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .form-card {
+    padding: var(--space-md);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .navbar-container {
+    flex-wrap: wrap;
+  }
+
+  .navbar-nav {
+    gap: 6px;
+  }
+
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .btn {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .card-footer .btn {
+    width: 100%;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. Футер
+   -------------------------------------------------------------------------- */
+.footer {
+  background-color: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-md) 0;
+  text-align: center;
+  font-size: var(--font-caption);
+  color: var(--color-text-muted);
+  margin-top: auto;
+}
