@@ -1,15 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Доступ запрещён — Бронирование 2027{% endblock %}
+{% block title %}403 Доступ запрещён · Бронирование 2027{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto text-center mt-20">
-    <div class="text-7xl mb-4">🚫</div>
-    <h1 class="text-4xl font-bold text-red-600 mb-2">403</h1>
-    <p class="text-xl text-gray-700 mb-2">Доступ запрещён</p>
-    <p class="text-gray-400 text-sm mb-6">У вас нет прав для просмотра этой страницы.<br>Требуются права администратора.</p>
-    <a href="{{ url_for('index') }}"
-       class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
-        На главную
+<div class="form-card" style="text-align: center; max-width: 520px; padding: 36px 20px;">
+    <div style="width: 64px; height: 64px; margin: 0 auto 16px; background-color: var(--color-danger-bg); border: 1px solid var(--color-danger-border); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="32" height="32" fill="var(--color-danger)"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+    </div>
+    
+    <span class="badge badge-admin" style="font-size: 13px; margin-bottom: 8px;">HTTP 403 Forbidden</span>
+    <h1>Доступ ограничен</h1>
+    <p class="text-body" style="margin-bottom: 16px;">
+        Для перехода по адресу <code>/admin-panel</code> требуются права системного администратора <strong>Conf2027</strong>.
+    </p>
+
+    <div style="background-color: var(--color-surface-hover); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 12px; font-family: monospace; font-size: 13px; color: var(--color-danger); text-align: left; margin-bottom: 24px; overflow-x: auto;">
+        {"status": 403, "error": "AccessDenied", "detail": "Missing admin privilege"}
+    </div>
+
+    <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-block">
+        Вернуться в личный кабинет
     </a>
 </div>
 {% endblock %}

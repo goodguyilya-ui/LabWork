@@ -1,201 +1,222 @@
 {% extends "base.html" %}
-{% block title %}Личный кабинет — Бронирование 2027{% endblock %}
+{% block title %}Личный кабинет · Бронирование 2027{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold text-indigo-700 mb-6">Личный кабинет</h1>
-
-<!-- ── User info card ─────────────────────────────────────────────────── -->
-<div class="bg-white rounded-xl shadow p-6 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div style="margin-bottom: 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
     <div>
-        <p class="text-xs text-gray-400 uppercase tracking-wide">ФИО</p>
-        <p class="font-semibold text-gray-800">{{ user.full_name }}</p>
+        <h1>Личный кабинет</h1>
+        <p class="text-caption">Управление вашими бронированиями и профилем</p>
     </div>
-    <div>
-        <p class="text-xs text-gray-400 uppercase tracking-wide">Логин</p>
-        <p class="font-semibold text-gray-800">{{ user.login }}</p>
-    </div>
-    <div>
-        <p class="text-xs text-gray-400 uppercase tracking-wide">Телефон</p>
-        <p class="font-semibold text-gray-800">{{ user.phone }}</p>
-    </div>
-    <div>
-        <p class="text-xs text-gray-400 uppercase tracking-wide">Email</p>
-        <p class="font-semibold text-gray-800">{{ user.email }}</p>
-    </div>
-</div>
-
-<!-- ── New reservation button ─────────────────────────────────────────── -->
-<div class="mb-6">
-    <button onclick="document.getElementById('modalReservation').classList.remove('hidden')"
-            class="bg-indigo-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
-        + Новая заявка
+    <button onclick="document.getElementById('modalReservation').classList.remove('hidden')" class="btn btn-primary">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+        <span>Новая заявка</span>
     </button>
 </div>
 
-<!-- ── Reservations table ─────────────────────────────────────────────── -->
-<div class="bg-white rounded-xl shadow overflow-x-auto">
-    <table class="min-w-full text-sm">
-        <thead class="bg-indigo-50 text-indigo-700">
-            <tr>
-                <th class="px-4 py-3 text-left">ID</th>
-                <th class="px-4 py-3 text-left">Помещение</th>
-                <th class="px-4 py-3 text-left">Начало</th>
-                <th class="px-4 py-3 text-left">Конец</th>
-                <th class="px-4 py-3 text-left">Оплата</th>
-                <th class="px-4 py-3 text-left">Статус</th>
-                <th class="px-4 py-3 text-left">Отзыв</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-            {% for r in reservations %}
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 text-gray-500">{{ r.id }}</td>
-                <td class="px-4 py-3 font-medium">{{ r.venue_name }}</td>
-                <td class="px-4 py-3">{{ r.start_time.strftime('%d.%m.%Y %H:%M') }}</td>
-                <td class="px-4 py-3">{{ r.end_time.strftime('%d.%m.%Y %H:%M') }}</td>
-                <td class="px-4 py-3">{{ r.payment_method }}</td>
-                <td class="px-4 py-3">
-                    {% if r.status == 'Новая' %}
-                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold">Новая</span>
-                    {% elif r.status == 'Мероприятие назначено' %}
-                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-semibold">Назначено</span>
-                    {% else %}
-                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-semibold">Завершено</span>
-                    {% endif %}
-                </td>
-                <td class="px-4 py-3">
-                    {% if r.status == 'Завершено' and not r.review_id %}
-                        <button
-                            onclick="openReviewModal({{ r.id }})"
-                            class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition text-xs font-semibold">
-                            Оставить отзыв
-                        </button>
-                    {% elif r.review_id %}
-                        <span class="text-gray-400 text-xs">Отзыв оставлен</span>
-                    {% else %}
-                        <span class="text-gray-300 text-xs">—</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" class="px-4 py-8 text-center text-gray-400">
-                    У вас пока нет заявок
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<!-- ── Карточка профиля пользователя ──────────────────────────────────────── -->
+<div class="reservation-card" style="margin-bottom: 24px;">
+    <div class="card-header">
+        <span class="card-id">Профиль клиента</span>
+        <span class="badge badge-assigned">Роль: {{ user.role }}</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+        <div>
+            <span class="meta-label">ФИО клиента</span>
+            <span class="font-bold text-body">{{ user.full_name }}</span>
+        </div>
+        <div>
+            <span class="meta-label">Логин</span>
+            <span class="text-body font-bold" style="color: var(--color-primary-dark);">{{ user.login }}</span>
+        </div>
+        <div>
+            <span class="meta-label">Телефон</span>
+            <span class="text-body">{{ user.phone }}</span>
+        </div>
+        <div>
+            <span class="meta-label">Email</span>
+            <span class="text-body">{{ user.email }}</span>
+        </div>
+    </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     Modal: New Reservation
-════════════════════════════════════════════════════════════════════════ -->
-<div id="modalReservation"
-     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold text-indigo-700">Новая заявка</h2>
-            <button onclick="document.getElementById('modalReservation').classList.add('hidden')"
-                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+<!-- ── Список заявок в виде адаптивных карточек ────────────────────────────── -->
+<div style="margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+    <h2>Мои заявки на бронирование</h2>
+    <span class="badge badge-new" style="background-color: var(--color-surface); border-color: var(--color-border); color: var(--color-text);">
+        Всего: {{ reservations|length }}
+    </span>
+</div>
+
+<p class="text-caption" style="margin-bottom: 16px;">
+    Отображаются только бронирования вашей текущей сессии (user_id = {{ user.id }}).
+</p>
+
+{% if reservations %}
+<div class="cards-grid">
+    {% for r in reservations %}
+    <div class="reservation-card">
+        <div>
+            <div class="card-header">
+                <span class="card-id">#{{ r.id }}</span>
+                {% if r.status == 'Новая' %}
+                    <span class="badge badge-new">Новая</span>
+                {% elif r.status == 'Мероприятие назначено' %}
+                    <span class="badge badge-assigned">Назначено</span>
+                {% else %}
+                    <span class="badge badge-completed">Завершено</span>
+                {% endif %}
+            </div>
+
+            <div class="card-title">{{ r.venue_name }}</div>
+
+            <div class="card-meta-list">
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <div>
+                        <span class="meta-label">Период проведения</span>
+                        <span>{{ r.start_time.strftime('%d.%m.%Y %H:%M') }} — {{ r.end_time.strftime('%H:%M') }}</span>
+                    </div>
+                </div>
+
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    <div>
+                        <span class="meta-label">Способ оплаты</span>
+                        <span class="font-bold">{{ r.payment_method }}</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <form method="POST" action="{{ url_for('reservation_new') }}" class="space-y-4">
+        <div class="card-footer">
+            {% if r.status == 'Завершено' and not r.review_id %}
+                <button onclick="openReviewModal({{ r.id }})" class="btn btn-sm btn-success" style="width: 100%;">
+                    ★ Оставить отзыв
+                </button>
+            {% elif r.review_id %}
+                <span class="text-caption" style="color: var(--color-success); font-weight: 700;">✓ Отзыв сохранён</span>
+            {% else %}
+                <span class="text-caption">Отзыв доступен после завершения</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="reservation-card" style="text-align: center; padding: 48px 16px;">
+    <p class="text-body font-bold">У вас пока нет активных заявок</p>
+    <p class="text-caption" style="margin-bottom: 16px;">Нажмите кнопку «Новая заявка», чтобы забронировать помещение</p>
+    <div>
+        <button onclick="document.getElementById('modalReservation').classList.remove('hidden')" class="btn btn-primary">
+            + Создать первую заявку
+        </button>
+    </div>
+</div>
+{% endif %}
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Помещение</label>
-                <select name="venue_id" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="">— Выберите помещение —</option>
+<!-- ── Модальное окно: Новая заявка ───────────────────────────────────────── -->
+<div id="modalReservation" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="h3" style="margin-bottom: 0;">Оформление заявки</h3>
+            <button type="button" class="modal-close" onclick="closeModal('modalReservation')">&times;</button>
+        </div>
+
+        <form method="POST" action="{{ url_for('reservation_new') }}">
+            <!-- Выпадающий список: Помещение -->
+            <div class="form-group">
+                <label for="venueSelect" class="form-label">
+                    <span>Помещение <span class="required">*</span></span>
+                </label>
+                <select id="venueSelect" name="venue_id" class="form-select" required>
+                    <option value="" disabled selected>— Выберите тип и зал —</option>
                     {% for v in venues %}
                         <option value="{{ v.id }}">
-                            {{ v.name }} ({{ v.type }}, {{ v.capacity }} чел., {{ v.price_per_hour }} ₽/ч)
+                            {{ v.name }} ({{ v.type }}, {{ v.capacity }} мест, {{ v.price_per_hour }} ₽/ч)
                         </option>
                     {% endfor %}
                 </select>
+                <span class="field-hint">Доступны аудитории, коворкинг и кинозал</span>
             </div>
 
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Начало</label>
-                    <input type="datetime-local" name="start_time" required
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+            <!-- Время начала и окончания -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                <div class="form-group">
+                    <label for="startTimeInput" class="form-label">
+                        <span>Начало <span class="required">*</span></span>
+                    </label>
+                    <input type="datetime-local" id="startTimeInput" name="start_time" class="form-control" required />
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Окончание</label>
-                    <input type="datetime-local" name="end_time" required
-                           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                <div class="form-group">
+                    <label for="endTimeInput" class="form-label">
+                        <span>Окончание <span class="required">*</span></span>
+                    </label>
+                    <input type="datetime-local" id="endTimeInput" name="end_time" class="form-control" required />
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Способ оплаты</label>
-                <select name="payment_method" required
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="очно">Очно</option>
-                    <option value="СБП">СБП</option>
+            <!-- Выпадающий список: Способ оплаты -->
+            <div class="form-group">
+                <label for="paymentSelect" class="form-label">
+                    <span>Способ оплаты <span class="required">*</span></span>
+                </label>
+                <select id="paymentSelect" name="payment_method" class="form-select" required>
+                    <option value="СБП" selected>Система быстрых платежей (СБП)</option>
+                    <option value="очно">Оплата очно администратору</option>
                 </select>
             </div>
 
-            <div class="flex justify-end gap-3 pt-2">
-                <button type="button"
-                        onclick="document.getElementById('modalReservation').classList.add('hidden')"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition">
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('modalReservation')">
                     Отмена
                 </button>
-                <button type="submit"
-                        class="px-5 py-2 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 transition">
-                    Создать заявку
+                <button type="submit" class="btn btn-primary" style="flex: 1;">
+                    Забронировать
                 </button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════
-     Modal: Review
-════════════════════════════════════════════════════════════════════════ -->
-<div id="modalReview"
-     class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-bold text-indigo-700">Оставить отзыв</h2>
-            <button onclick="document.getElementById('modalReview').classList.add('hidden')"
-                    class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+<!-- ── Модальное окно: Отзыв ──────────────────────────────────────────────── -->
+<div id="modalReview" class="modal-backdrop" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="h3" style="margin-bottom: 0;">Отзыв о мероприятии</h3>
+            <button type="button" class="modal-close" onclick="closeModal('modalReview')">&times;</button>
         </div>
 
-        <form method="POST" action="{{ url_for('review_new') }}" class="space-y-4">
+        <form method="POST" action="{{ url_for('review_new') }}">
             <input type="hidden" name="reservation_id" id="reviewReservationId" />
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Оценка</label>
-                <div class="flex gap-2">
+            <div class="form-group">
+                <label class="form-label">
+                    <span>Ваша оценка <span class="required">*</span></span>
+                </label>
+                <div style="display: flex; gap: 12px; font-size: 28px; cursor: pointer;">
                     {% for star in range(1, 6) %}
-                    <label class="flex flex-col items-center cursor-pointer">
-                        <input type="radio" name="rating" value="{{ star }}" required class="sr-only peer" />
-                        <span class="text-3xl peer-checked:text-yellow-400 text-gray-300 hover:text-yellow-300 transition select-none">★</span>
-                        <span class="text-xs text-gray-500">{{ star }}</span>
+                    <label style="cursor: pointer; text-align: center;">
+                        <input type="radio" name="rating" value="{{ star }}" required style="display: none;" class="star-radio" />
+                        <span class="star-label" style="color: #cbd5e1; transition: color 0.15s;">★</span>
+                        <span class="text-caption" style="display: block; font-size: 11px;">{{ star }}</span>
                     </label>
                     {% endfor %}
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Комментарий</label>
-                <textarea name="comment" rows="3"
-                          class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          placeholder="Необязательно..."></textarea>
+            <div class="form-group">
+                <label for="reviewComment" class="form-label">
+                    <span>Текстовый отзыв</span>
+                </label>
+                <textarea id="reviewComment" name="comment" rows="3" class="form-control" placeholder="Поделитесь впечатлениями о помещении..."></textarea>
             </div>
 
-            <div class="flex justify-end gap-3 pt-2">
-                <button type="button"
-                        onclick="document.getElementById('modalReview').classList.add('hidden')"
-                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition">
-                    Отмена
+            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="button" class="btn btn-outline" style="flex: 1;" onclick="closeModal('modalReview')">
+                    Закрыть
                 </button>
-                <button type="submit"
-                        class="px-5 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition">
-                    Отправить отзыв
+                <button type="submit" class="btn btn-success" style="flex: 1;">
+                    Отправить
                 </button>
             </div>
         </form>
@@ -205,28 +226,36 @@
 
 {% block scripts %}
 <script>
-function openReviewModal(reservationId) {
-    document.getElementById('reviewReservationId').value = reservationId;
-    document.getElementById('modalReview').classList.remove('hidden');
-}
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
 
-/* Close modals on backdrop click */
-['modalReservation', 'modalReview'].forEach(function(id) {
-    document.getElementById(id).addEventListener('click', function(e) {
-        if (e.target === this) this.classList.add('hidden');
-    });
-});
+    function openReviewModal(resId) {
+        document.getElementById('reviewReservationId').value = resId;
+        document.getElementById('modalReview').style.display = 'flex';
+    }
 
-/* Star rating interactivity */
-const stars = document.querySelectorAll('#modalReview input[name="rating"]');
-stars.forEach(function(radio) {
-    radio.addEventListener('change', function() {
-        const val = parseInt(this.value);
-        document.querySelectorAll('#modalReview .text-3xl').forEach(function(span, i) {
-            span.classList.toggle('text-yellow-400', i < val);
-            span.classList.toggle('text-gray-300',   i >= val);
+    document.querySelector('[onclick*="modalReservation"]').onclick = function() {
+        document.getElementById('modalReservation').style.display = 'flex';
+    };
+
+    // Закрытие по клику вне модального контента
+    ['modalReservation', 'modalReview'].forEach(function(id) {
+        const el = document.getElementById(id);
+        el.addEventListener('click', function(e) {
+            if (e.target === el) closeModal(id);
         });
     });
-});
+
+    // Интерактивные звёзды
+    const starRadios = document.querySelectorAll('.star-radio');
+    starRadios.forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            const val = parseInt(this.value);
+            document.querySelectorAll('.star-label').forEach(function(star, idx) {
+                star.style.color = (idx < val) ? '#f59e0b' : '#cbd5e1';
+            });
+        });
+    });
 </script>
 {% endblock %}

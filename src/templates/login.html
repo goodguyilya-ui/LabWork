@@ -1,32 +1,78 @@
 {% extends "base.html" %}
-{% block title %}Вход — Бронирование 2027{% endblock %}
+{% block title %}Вход в систему · Бронирование 2027{% endblock %}
 
 {% block content %}
-<div class="max-w-md mx-auto bg-white rounded-xl shadow p-8 mt-10">
-    <h1 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Вход в систему</h1>
+<div class="form-card">
+    <div style="text-align: center; margin-bottom: 24px;">
+        <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Логотип" width="48" height="48" style="margin-bottom: 8px;">
+        <h1>Авторизация</h1>
+        <p class="text-caption">Введите свои учётные данные для доступа в личный кабинет</p>
+    </div>
 
-    <form method="POST" action="{{ url_for('login') }}" class="space-y-4">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="login">Логин</label>
-            <input id="login" name="login" type="text" required autocomplete="username"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                   placeholder="Введите логин" />
+    <form method="POST" action="{{ url_for('login') }}" novalidate>
+        <!-- Поле: Логин -->
+        <div class="form-group">
+            <label for="loginInput" class="form-label">
+                <span>Логин <span class="required">*</span></span>
+            </label>
+            <input
+                type="text"
+                id="loginInput"
+                name="login"
+                class="form-control {% if field_errors and field_errors.get('login') %}is-invalid{% endif %}"
+                value="{{ form.login if form else '' }}"
+                placeholder="Ваш логин (например, client01)"
+                required
+                autocomplete="username"
+                {% if field_errors and field_errors.get('login') %}aria-describedby="loginError"{% endif %}
+            />
+            {% if field_errors and field_errors.get('login') %}
+                <div class="field-error-msg" id="loginError" role="alert">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    <span>{{ field_errors.get('login') }}</span>
+                </div>
+            {% endif %}
+            <span class="field-hint">Латиница и цифры, не менее 6 символов</span>
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="password">Пароль</label>
-            <input id="password" name="password" type="password" required autocomplete="current-password"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                   placeholder="Введите пароль" />
+
+        <!-- Поле: Пароль -->
+        <div class="form-group">
+            <label for="passwordInput" class="form-label">
+                <span>Пароль <span class="required">*</span></span>
+            </label>
+            <input
+                type="password"
+                id="passwordInput"
+                name="password"
+                class="form-control {% if field_errors and field_errors.get('password') %}is-invalid{% endif %}"
+                placeholder="Ваш пароль"
+                required
+                autocomplete="current-password"
+                {% if field_errors and field_errors.get('password') %}aria-describedby="passwordError"{% endif %}
+            />
+            {% if field_errors and field_errors.get('password') %}
+                <div class="field-error-msg" id="passwordError" role="alert">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                    <span>{{ field_errors.get('password') }}</span>
+                </div>
+            {% endif %}
         </div>
-        <button type="submit"
-                class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
-            Войти
+
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top: 16px;">
+            Войти в кабинет
         </button>
     </form>
 
-    <p class="mt-4 text-center text-sm text-gray-500">
-        Нет аккаунта?
-        <a href="{{ url_for('register') }}" class="text-indigo-600 hover:underline font-medium">Зарегистрироваться</a>
-    </p>
+    <div style="margin-top: 24px; text-align: center; border-top: 1px solid var(--color-border); padding-top: 16px;">
+        <p class="text-body" style="font-size: 14px;">
+            Ещё нет аккаунта?
+            <a href="{{ url_for('register') }}" class="font-bold">Зарегистрироваться</a>
+        </p>
+        <div style="margin-top: 12px; background: var(--color-surface-hover); padding: 8px 12px; border-radius: var(--radius-sm); text-align: left;">
+            <p class="text-caption" style="margin-bottom: 2px;"><strong>Демо-доступы КИМ:</strong></p>
+            <p class="text-caption">Администратор: <code>Conf2027</code> / <code>Demo77</code></p>
+            <p class="text-caption">Клиент: <code>client01</code> / <code>ClientPass123!</code></p>
+        </div>
+    </div>
 </div>
 {% endblock %}

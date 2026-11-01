@@ -1,63 +1,115 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" data-theme="light">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% block title %}Бронирование 2027{% endblock %}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}Бронирование 2027 · ПИРИП{% endblock %}</title>
+    <!-- PT Sans Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <!-- UI-Kit & Tokens Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Inline script to prevent flash of wrong theme -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('pirip_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body>
 
-<!-- ── Navbar ────────────────────────────────────────────────────────────── -->
-<nav class="bg-indigo-700 text-white shadow-md">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-        <a href="{{ url_for('index') }}" class="text-xl font-bold tracking-wide">🏛 Бронирование 2027</a>
-        <div class="flex items-center gap-4 text-sm">
+<!-- ── Навигационная панель (Navbar) ──────────────────────────────────────── -->
+<header class="navbar">
+    <div class="container navbar-container">
+        <a href="{{ url_for('index') }}" class="navbar-brand">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Логотип" width="28" height="28" class="brand-icon">
+            <span>Бронирование 2027</span>
+        </a>
+
+        <nav class="navbar-nav">
+            <a href="{{ url_for('uikit') }}" class="nav-link">UI-Kit</a>
+
             {% if session.get('user_id') %}
-                <span class="opacity-80">{{ session.get('login') }}</span>
                 {% if session.get('role') == 'admin' %}
-                    <a href="{{ url_for('admin_panel') }}"
-                       class="bg-yellow-400 text-indigo-900 px-3 py-1 rounded font-semibold hover:bg-yellow-300 transition">
-                        Админ-панель
-                    </a>
+                    <a href="{{ url_for('admin_panel') }}" class="nav-link font-bold" style="color: #fde047;">Админ-панель</a>
                 {% else %}
-                    <a href="{{ url_for('dashboard') }}"
-                       class="hover:underline">Личный кабинет</a>
+                    <a href="{{ url_for('dashboard') }}" class="nav-link">Кабинет</a>
                 {% endif %}
-                <a href="{{ url_for('logout') }}"
-                   class="bg-red-500 px-3 py-1 rounded hover:bg-red-400 transition">Выйти</a>
+                <span class="text-caption" style="color: rgba(255,255,255,0.7); display: inline-block;">{{ session.get('login') }}</span>
+                <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger">Выйти</a>
             {% else %}
-                <a href="{{ url_for('login') }}"    class="hover:underline">Войти</a>
-                <a href="{{ url_for('register') }}" class="bg-white text-indigo-700 px-3 py-1 rounded font-semibold hover:bg-gray-100 transition">Регистрация</a>
+                <a href="{{ url_for('login') }}" class="nav-link">Вход</a>
+                <a href="{{ url_for('register') }}" class="btn btn-sm btn-primary" style="background-color: #ffffff; color: #0d47a1;">Регистрация</a>
             {% endif %}
-        </div>
-    </div>
-</nav>
 
-<!-- ── Flash messages ────────────────────────────────────────────────────── -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-        <div class="max-w-6xl mx-auto px-4 mt-4 space-y-2">
+            <!-- Переключатель темы (Светлая / Тёмная) -->
+            <button id="themeToggleBtn" type="button" class="theme-toggle-btn" aria-label="Переключить тему оформления" title="Сменить тему">
+                <span id="themeIcon">🌓</span>
+            </button>
+        </nav>
+    </div>
+</header>
+
+<!-- ── Всплывающие сообщения (Flash alerts) ────────────────────────────────── -->
+<div class="container" style="margin-top: 16px;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
             {% for category, message in messages %}
-                {% set color = 'blue' %}
-                {% if category == 'success' %}{% set color = 'green' %}{% endif %}
-                {% if category == 'error'   %}{% set color = 'red'   %}{% endif %}
-                <div class="bg-{{ color }}-100 border border-{{ color }}-400 text-{{ color }}-800 px-4 py-3 rounded relative" role="alert">
-                    {{ message }}
+                <div class="alert alert-{{ 'success' if category == 'success' else ('danger' if category == 'error' else 'info') }}" role="alert">
+                    <span>{{ message }}</span>
                 </div>
             {% endfor %}
-        </div>
-    {% endif %}
-{% endwith %}
+        {% endif %}
+    {% endwith %}
+</div>
 
-<!-- ── Page content ──────────────────────────────────────────────────────── -->
-<main class="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
+<!-- ── Основное содержимое страницы ───────────────────────────────────────── -->
+<main class="main-content container">
     {% block content %}{% endblock %}
 </main>
 
-<footer class="text-center text-gray-400 text-xs py-4">
-    © 2027 Система бронирования помещений — ПИРИП ЛР-02
+<!-- ── Футер ──────────────────────────────────────────────────────────────── -->
+<footer class="footer">
+    <div class="container">
+        <p class="text-caption">
+            «Проектирование и разработка интерфейсов пользователя» · ЛР-03 «Дизайн и адаптивность» (390×844 px)
+        </p>
+        <p class="text-caption" style="margin-top: 4px; opacity: 0.8;">
+            Шрифт: PT Sans | Палитра КИМ: #007bff, #0d47a1, #6c757d, #f8f9fa, #ffffff
+        </p>
+    </div>
 </footer>
+
+<!-- ── Скрипт переключения темы ───────────────────────────────────────────── -->
+<script>
+    const themeBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+
+    function updateThemeIcon(theme) {
+        if (themeIcon) {
+            themeIcon.textContent = theme === 'dark' ? '☀️' : '🌙';
+        }
+    }
+
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    updateThemeIcon(currentTheme);
+
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('pirip_theme', next);
+            updateThemeIcon(next);
+        });
+    }
+</script>
 
 {% block scripts %}{% endblock %}
 </body>

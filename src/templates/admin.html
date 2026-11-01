@@ -1,71 +1,132 @@
 {% extends "base.html" %}
-{% block title %}Панель администратора — Бронирование 2027{% endblock %}
+{% block title %}Панель администратора Conf2027 · ПИРИП{% endblock %}
 
 {% block content %}
-<h1 class="text-2xl font-bold text-indigo-700 mb-2">Панель управления Conf2027</h1>
-<p class="text-gray-500 mb-6 text-sm">Управление заявками на бронирование помещений</p>
-
-<div class="bg-white rounded-xl shadow overflow-x-auto">
-    <table class="min-w-full text-sm">
-        <thead class="bg-indigo-50 text-indigo-700">
-            <tr>
-                <th class="px-4 py-3 text-left">ID</th>
-                <th class="px-4 py-3 text-left">Клиент</th>
-                <th class="px-4 py-3 text-left">Помещение</th>
-                <th class="px-4 py-3 text-left">Начало</th>
-                <th class="px-4 py-3 text-left">Конец</th>
-                <th class="px-4 py-3 text-left">Статус</th>
-                <th class="px-4 py-3 text-left">Действие</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-100">
-            {% for r in reservations %}
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 py-3 text-gray-500">{{ r.id }}</td>
-                <td class="px-4 py-3">
-                    <p class="font-medium text-gray-800">{{ r.full_name }}</p>
-                    <p class="text-xs text-gray-400">{{ r.phone }}</p>
-                </td>
-                <td class="px-4 py-3 font-medium">{{ r.venue_name }}</td>
-                <td class="px-4 py-3">{{ r.start_time.strftime('%d.%m.%Y %H:%M') }}</td>
-                <td class="px-4 py-3">{{ r.end_time.strftime('%d.%m.%Y %H:%M') }}</td>
-                <td class="px-4 py-3">
-                    {% if r.status == 'Новая' %}
-                        <span class="bg-blue-100 text-blue-700 px-2 py-0.5 rounded text-xs font-semibold">Новая</span>
-                    {% elif r.status == 'Мероприятие назначено' %}
-                        <span class="bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded text-xs font-semibold">Назначено</span>
-                    {% else %}
-                        <span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-xs font-semibold">Завершено</span>
-                    {% endif %}
-                </td>
-                <td class="px-4 py-3">
-                    {% if r.status == 'Новая' %}
-                        <form method="POST" action="{{ url_for('reservation_status', res_id=r.id) }}" class="inline">
-                            <button type="submit"
-                                    class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition text-xs font-semibold">
-                                Назначить
-                            </button>
-                        </form>
-                    {% elif r.status == 'Мероприятие назначено' %}
-                        <form method="POST" action="{{ url_for('reservation_status', res_id=r.id) }}" class="inline">
-                            <button type="submit"
-                                    class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition text-xs font-semibold">
-                                Завершить
-                            </button>
-                        </form>
-                    {% else %}
-                        <span class="text-gray-300 text-xs">—</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" class="px-4 py-8 text-center text-gray-400">
-                    Заявок пока нет
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div style="margin-bottom: 24px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;">
+    <div>
+        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+            <span class="badge badge-admin">Администратор</span>
+            <span class="text-caption font-bold">Conf2027</span>
+        </div>
+        <h1>Управление заявками</h1>
+        <p class="text-caption">Реестр бронирований и перевод жизненного цикла заявок</p>
+    </div>
 </div>
+
+<!-- ── Панель фильтров (не перекрываются на 390px) ─────────────────────────── -->
+<div class="reservation-card" style="margin-bottom: 24px; padding: 12px 16px;">
+    <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;">
+        <span class="font-bold text-body" style="font-size: 14px;">Фильтр статуса:</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button type="button" class="btn btn-sm btn-outline active-filter" onclick="filterCards('all', this)">Все</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="filterCards('Новая', this)">Новые</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="filterCards('Мероприятие назначено', this)">Назначенные</button>
+            <button type="button" class="btn btn-sm btn-outline" onclick="filterCards('Завершено', this)">Завершённые</button>
+        </div>
+    </div>
+</div>
+
+<!-- ── Сетка адаптивных карточек администратора ───────────────────────────── -->
+<div class="cards-grid" id="adminCardsGrid">
+    {% for r in reservations %}
+    <div class="reservation-card admin-card" data-status="{{ r.status }}">
+        <div>
+            <div class="card-header">
+                <span class="card-id">#{{ r.id }}</span>
+                {% if r.status == 'Новая' %}
+                    <span class="badge badge-new">Новая</span>
+                {% elif r.status == 'Мероприятие назначено' %}
+                    <span class="badge badge-assigned">Назначено</span>
+                {% else %}
+                    <span class="badge badge-completed">Завершено</span>
+                {% endif %}
+            </div>
+
+            <div class="card-title">{{ r.venue_name }}</div>
+
+            <div class="card-meta-list">
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    <div>
+                        <span class="meta-label">Клиент</span>
+                        <span class="font-bold">{{ r.full_name }}</span>
+                        <div class="text-caption">тел: {{ r.phone }}</div>
+                    </div>
+                </div>
+
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <div>
+                        <span class="meta-label">Период бронирования</span>
+                        <span>{{ r.start_time.strftime('%d.%m.%Y %H:%M') }} — {{ r.end_time.strftime('%H:%M') }}</span>
+                    </div>
+                </div>
+
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    <div>
+                        <span class="meta-label">Оплата</span>
+                        <span>{{ r.payment_method }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            {% if r.status == 'Новая' %}
+                <form method="POST" action="{{ url_for('reservation_status', res_id=r.id) }}" style="width: 100%;">
+                    <button type="submit" class="btn btn-sm btn-primary" style="width: 100%;">
+                        Назначить мероприятие
+                    </button>
+                </form>
+            {% elif r.status == 'Мероприятие назначено' %}
+                <form method="POST" action="{{ url_for('reservation_status', res_id=r.id) }}" style="width: 100%;">
+                    <button type="submit" class="btn btn-sm btn-success" style="width: 100%;">
+                        Завершить мероприятие
+                    </button>
+                </form>
+            {% else %}
+                <span class="text-caption" style="color: var(--color-success); font-weight: 700; width: 100%; text-align: center;">
+                    ✓ Мероприятие завершено
+                </span>
+            {% endif %}
+        </div>
+    </div>
+    {% else %}
+    <div class="reservation-card" style="text-align: center; padding: 32px;">
+        <p class="text-body font-bold">В базе данных нет заявок на бронирование</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function filterCards(status, btn) {
+        document.querySelectorAll('.active-filter').forEach(function(b) {
+            b.classList.remove('active-filter');
+            b.style.backgroundColor = 'transparent';
+            b.style.color = 'var(--color-text)';
+        });
+        btn.classList.add('active-filter');
+        btn.style.backgroundColor = 'var(--color-primary)';
+        btn.style.color = '#ffffff';
+
+        const cards = document.querySelectorAll('.admin-card');
+        cards.forEach(function(card) {
+            if (status === 'all' || card.getAttribute('data-status') === status) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    // Первоначальное выделение кнопки "Все"
+    const firstFilter = document.querySelector('.active-filter');
+    if (firstFilter) {
+        firstFilter.style.backgroundColor = 'var(--color-primary)';
+        firstFilter.style.color = '#ffffff';
+    }
+</script>
 {% endblock %}

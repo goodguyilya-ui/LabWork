@@ -108,21 +108,21 @@ def register():
     phone        = request.form.get('phone', '').strip()
     email        = request.form.get('email', '').strip()
 
-    errors = []
+    field_errors = {}
 
     if not LOGIN_REGEX.match(login_val):
-        errors.append('Логин: только латинские буквы/цифры, минимум 6 символов.')
-    if len(password_val) < 6:
-        errors.append('Пароль: минимум 6 символов.')
+        field_errors['login'] = 'Логин: только латинские буквы и цифры, не менее 6 символов.'
+    if len(password_val) < 8:
+        field_errors['password'] = 'Пароль должен содержать не менее 8 символов.'
     if not FIO_REGEX.match(full_name):
-        errors.append('ФИО: только кириллица и пробелы.')
+        field_errors['full_name'] = 'ФИО должно содержать только кириллицу и пробелы.'
     if not PHONE_REGEX.match(phone):
-        errors.append('Телефон: формат 8(XXX)XXX-XX-XX.')
+        field_errors['phone'] = 'Телефон: строго по формату 8(XXX)XXX-XX-XX.'
     if not EMAIL_REGEX.match(email):
-        errors.append('Некорректный email.')
+        field_errors['email'] = 'Некорректный формат адреса электронной почты.'
 
-    if errors:
-        return render_template('register.html', errors=errors, form=request.form)
+    if field_errors:
+        return render_template('register.html', field_errors=field_errors, errors=list(field_errors.values()), form=request.form), 400
 
     try:
         with get_db() as conn:
@@ -131,14 +131,14 @@ def register():
             # uniqueness checks
             cur.execute('SELECT id FROM users WHERE login = %s', (login_val,))
             if cur.fetchone():
-                errors.append('Логин уже занят.')
+                field_errors['login'] = 'Логин уже занят другим пользователем.'
 
             cur.execute('SELECT id FROM users WHERE email = %s', (email,))
             if cur.fetchone():
-                errors.append('Email уже используется.')
+                field_errors['email'] = 'Email уже зарегистрирован в системе.'
 
-            if errors:
-                return render_template('register.html', errors=errors, form=request.form)
+            if field_errors:
+                return render_template('register.html', field_errors=field_errors, errors=list(field_errors.values()), form=request.form), 400
 
             pwd_hash = generate_password_hash(password_val)
             cur.execute(
@@ -180,8 +180,9 @@ def login():
         return render_template('login.html')
 
     if not user or not check_password_hash(user['password_hash'], password_val):
+        field_errors = {'login': 'Неверный логин или пароль. Проверьте данные и повторите попытку.'}
         flash('Неверный логин или пароль.', 'error')
-        return render_template('login.html')
+        return render_template('login.html', field_errors=field_errors, form=request.form), 400
 
     session.clear()
     session['user_id']   = user['id']
@@ -419,6 +420,13 @@ def admin_panel():
         reservations = []
 
     return render_template('admin.html', reservations=reservations)
+
+
+# ── UI-Kit (LR-03 Showcase) ──────────────────────────────────────────────────
+
+@app.route('/uikit')
+def uikit():
+    return render_template('uikit.html')
 
 
 # ── Error pages ───────────────────────────────────────────────────────────────

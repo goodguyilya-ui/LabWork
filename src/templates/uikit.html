@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block title %}UI-Kit компонентов · ПИРИП ЛР-03{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 32px;">
+    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span class="badge badge-assigned">ПИРИП 2026/2027</span>
+        <span class="text-caption font-bold">ЛР-03 (Задание 2)</span>
+    </div>
+    <h1>Библиотека UI-компонентов (UI-Kit)</h1>
+    <p class="text-body text-muted">
+        Спецификация токенов стиля, типографики PT Sans, состояний компонентов и адаптивных карточек для экрана 390×844 px.
+    </p>
+</div>
+
+<!-- ── Секция 1: Цветовая палитра КИМ ──────────────────────────────────────── -->
+<section class="reservation-card" style="margin-bottom: 32px;">
+    <h2>1. Цветовая палитра КИМ 2027</h2>
+    <p class="text-caption" style="margin-bottom: 16px;">
+        Официальные токены палитры задания и семантические цвета интерфейса
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #007bff; height: 50px;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Primary</span>
+                <code style="font-size: 11px;">#007bff</code>
+            </div>
+        </div>
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #0d47a1; height: 50px;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Primary Dark</span>
+                <code style="font-size: 11px;">#0d47a1</code>
+            </div>
+        </div>
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #6c757d; height: 50px;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Secondary</span>
+                <code style="font-size: 11px;">#6c757d</code>
+            </div>
+        </div>
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #f8f9fa; height: 50px; border-bottom: 1px solid #dee2e6;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Background</span>
+                <code style="font-size: 11px;">#f8f9fa</code>
+            </div>
+        </div>
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #ffffff; height: 50px; border-bottom: 1px solid #dee2e6;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Surface</span>
+                <code style="font-size: 11px;">#ffffff</code>
+            </div>
+        </div>
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #28a745; height: 50px;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Success</span>
+                <code style="font-size: 11px;">#28a745</code>
+            </div>
+        </div>
+        <div style="border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden;">
+            <div style="background-color: #dc3545; height: 50px;"></div>
+            <div style="padding: 8px;">
+                <span class="font-bold text-caption" style="display:block;">Danger</span>
+                <code style="font-size: 11px;">#dc3545</code>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Секция 2: Типографика КИМ (PT Sans) ─────────────────────────────────── -->
+<section class="reservation-card" style="margin-bottom: 32px;">
+    <h2>2. Типографика КИМ (Шрифт: PT Sans)</h2>
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px;">
+        <div style="border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <span class="text-caption" style="color: var(--color-primary);">H1 — 36 px (font-weight: 700)</span>
+            <div class="h1" style="margin-bottom: 0;">Заголовок уровня H1: Бронирование помещений</div>
+        </div>
+        <div style="border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <span class="text-caption" style="color: var(--color-primary);">H2 — 24 px (font-weight: 700)</span>
+            <div class="h2" style="margin-bottom: 0;">Заголовок уровня H2: Мои активные заявки</div>
+        </div>
+        <div style="border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <span class="text-caption" style="color: var(--color-primary);">H3 — 18 px (font-weight: 700)</span>
+            <div class="h3" style="margin-bottom: 0;">Заголовок уровня H3: Главная лекционная аудитория 101</div>
+        </div>
+        <div style="border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">
+            <span class="text-caption" style="color: var(--color-primary);">Основной текст — 16 px (regular)</span>
+            <div class="text-body" style="margin-bottom: 0;">Основной наборный текст интерфейса: бронирование площадок для лекций, мастер-классов и кинопоказов.</div>
+        </div>
+        <div>
+            <span class="text-caption" style="color: var(--color-primary);">Вспомогательный текст — 12 px italic</span>
+            <div class="text-caption" style="display: block;">Подсказка к полю: формат строго 8(XXX)XXX-XX-XX, только кириллица и пробелы.</div>
+        </div>
+    </div>
+</section>
+
+<!-- ── Секция 3: Кнопки и их состояния ────────────────────────────────────── -->
+<section class="reservation-card" style="margin-bottom: 32px;">
+    <h2>3. Кнопки и состояния (Buttons & States)</h2>
+    <p class="text-caption" style="margin-bottom: 16px;">
+        Все кнопки имеют высоту не менее 44 px для комфортного нажатия на мобильных экранах (Touch Target).
+    </p>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px;">
+        <button class="btn btn-primary">Primary (Default)</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-success">Success</button>
+        <button class="btn btn-danger">Danger</button>
+        <button class="btn btn-outline">Outline</button>
+        <button class="btn btn-primary" disabled>Disabled</button>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+        <button class="btn btn-sm btn-primary">Small Button</button>
+        <button class="btn btn-sm btn-success">★ Оставить отзыв</button>
+        <button class="btn btn-sm btn-outline">Фильтр: Новые</button>
+    </div>
+</section>
+
+<!-- ── Секция 4: Поля форм, выпадающие списки и ошибки ────────────────────── -->
+<section class="reservation-card" style="margin-bottom: 32px;">
+    <h2>4. Поля ввода и локальные сообщения об ошибках</h2>
+    <p class="text-caption" style="margin-bottom: 16px;">
+        Согласно требованию КИМ: ошибки отображаются непосредственно у соответствующего поля с атрибутом <code>aria-describedby</code>.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        <!-- Обычное поле -->
+        <div class="form-group">
+            <label class="form-label"><span>Логин (Default State)</span></label>
+            <input type="text" class="form-control" value="client01" readonly />
+            <span class="field-hint">Латиница и цифры, не менее 6 символов</span>
+        </div>
+
+        <!-- Поле с ошибкой -->
+        <div class="form-group">
+            <label class="form-label"><span>Телефон (Error State) <span class="required">*</span></span></label>
+            <input type="text" class="form-control is-invalid" value="+79211112233" aria-describedby="demoPhoneError" />
+            <div class="field-error-msg" id="demoPhoneError">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+                <span>Телефон должен строго соответствовать маске 8(XXX)XXX-XX-XX</span>
+            </div>
+        </div>
+
+        <!-- Выпадающий список: Помещение -->
+        <div class="form-group">
+            <label class="form-label"><span>Выпадающий список помещения</span></label>
+            <select class="form-select">
+                <option>Главная лекционная аудитория 101 (60 мест)</option>
+                <option>Открытая зона коворкинга (25 мест)</option>
+                <option>Мультимедийный малый кинозал (40 мест)</option>
+            </select>
+            <span class="field-hint">Используется тег &lt;select&gt; взамен текстовых полей</span>
+        </div>
+
+        <!-- Выпадающий список: Оплата -->
+        <div class="form-group">
+            <label class="form-label"><span>Выпадающий список оплаты</span></label>
+            <select class="form-select">
+                <option>Система быстрых платежей (СБП)</option>
+                <option>Оплата очно администратору</option>
+            </select>
+        </div>
+    </div>
+</section>
+
+<!-- ── Секция 5: Бейджи статусов ──────────────────────────────────────────── -->
+<section class="reservation-card" style="margin-bottom: 32px;">
+    <h2>5. Бейджи статусов заявок</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px;">
+        <span class="badge badge-new">● Новая</span>
+        <span class="badge badge-assigned">● Мероприятие назначено</span>
+        <span class="badge badge-completed">● Завершено</span>
+        <span class="badge badge-admin">Администратор</span>
+    </div>
+</section>
+
+<!-- ── Секция 6: Карточка заявки (Экран 390x844) ───────────────────────────── -->
+<section class="reservation-card">
+    <h2>6. Адаптивная карточка бронирования (390×844 px)</h2>
+    <p class="text-caption" style="margin-bottom: 16px;">
+        Реализована карточная раскладка вместо широкой таблицы. Нет горизонтального переполнения экрана.
+    </p>
+
+    <div style="max-width: 360px; margin: 0 auto;">
+        <div class="reservation-card">
+            <div class="card-header">
+                <span class="card-id">#102</span>
+                <span class="badge badge-completed">Завершено</span>
+            </div>
+            <div class="card-title">Мультимедийный малый кинозал</div>
+            <div class="card-meta-list">
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    <div>
+                        <span class="meta-label">Период проведения</span>
+                        <span>20.10.2026 18:00 — 21:00</span>
+                    </div>
+                </div>
+                <div class="card-meta-item">
+                    <svg class="meta-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+                    <div>
+                        <span class="meta-label">Оплата</span>
+                        <span class="font-bold">очно</span>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-sm btn-success" style="width: 100%;">
+                    ★ Оставить отзыв
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
