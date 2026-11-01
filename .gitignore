@@ -16,6 +16,11 @@ env/
 .env
 .env.*
 
+# Archives
+*.zip
+*.tar.gz
+*.7z
+
 # IDE
 .idea/
 .vscode/
